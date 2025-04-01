@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "lib": ["es5", "es6"],
+      "target": "ES2024",
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "outDir": "./build",
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "downlevelIteration": true,
+      "sourceMap": true,
+      // "strict": true,
+      "noImplicitAny": true,
+      "skipLibCheck": true
+    },
+    "include": ["./src/**/**.ts", "./src/**.json"],
+    "exclude": ["node_modules", "./dist"],
+    "baseUrl": "."
+  }

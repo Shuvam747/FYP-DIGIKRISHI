@@ -1,0 +1,2 @@
+DB_URL='mongodb+srv://Shuvamdhakal20:NYc1CL5pSODRbdOZ@cluster0.7ig4h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+JWT_SECRET_KEY='f8dG7mLz9xYqP2aVwR5TnJkXbC3oM6sQZ1UvH4E'
