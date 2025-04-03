@@ -17,18 +17,29 @@ export function AddProductForm() {
   const [price, setPrice] = useState("")
   const [quantity, setQuantity] = useState("")
   const [availableForDelivery, setAvailableForDelivery] = useState(false)
-  const [photos, setPhotos] = useState<File[]>([])
+  const [image, setImage] = useState<File | null>(null) // Changed from photos array to single image
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setPhotos(Array.from(e.target.files))
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setImage(e.target.files[0]) // Store only the first file
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate required fields
+    if (!name || !price || !quantity) {
+      toast({
+        title: "Error",
+        description: "Name, price, and quantity are required fields.",
+        variant: "destructive",
+      })
+      return
+    }
+
     setLoading(true)
   
     const formData = new FormData()
@@ -37,9 +48,11 @@ export function AddProductForm() {
     formData.append("price", price)
     formData.append("quantity", quantity)
     formData.append("availableForDelivery", String(availableForDelivery))
-    photos.forEach((photo) => {
-      formData.append("photos", photo)
-    })
+    
+    // Append image if exists
+    if (image) {
+      formData.append("image", image) // Changed from "photos" to "image"
+    }
   
     try {
       const response = await api.post("/product", formData, {
@@ -49,19 +62,20 @@ export function AddProductForm() {
         },
       })
   
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         toast({
           title: "Success",
           description: "Product created successfully.",
           variant: "default",
         })
 
+        // Reset form
         setName("")
         setDescription("")
         setPrice("")
         setQuantity("")
         setAvailableForDelivery(false)
-        setPhotos([])
+        setImage(null)
       }
     } catch (error) {
       console.error("Error creating product:", error)
@@ -80,37 +94,64 @@ export function AddProductForm() {
       setLoading(false)
     }
   }
-  
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="name">Product Name</Label>
-        <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+        <Label htmlFor="name">Product Name *</Label>
+        <Input 
+          id="name" 
+          value={name} 
+          onChange={(e) => setName(e.target.value)} 
+          required 
+        />
       </div>
       <div>
         <Label htmlFor="description">Description</Label>
-        <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+        <Textarea 
+          id="description" 
+          value={description} 
+          onChange={(e) => setDescription(e.target.value)} 
+        />
       </div>
       <div>
-        <Label htmlFor="price">Price</Label>
-        <Input id="price" type="number" value={price} onChange={(e) => setPrice(e.target.value)} required />
+        <Label htmlFor="price">Price *</Label>
+        <Input 
+          id="price" 
+          type="number" 
+          min="0"
+          step="0.01"
+          value={price} 
+          onChange={(e) => setPrice(e.target.value)} 
+          required 
+        />
       </div>
       <div>
-        <Label htmlFor="quantity">Quantity</Label>
-        <Input id="quantity" type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
+        <Label htmlFor="quantity">Quantity *</Label>
+        <Input 
+          id="quantity" 
+          type="number" 
+          min="1"
+          value={quantity} 
+          onChange={(e) => setQuantity(e.target.value)} 
+          required 
+        />
       </div>
       <div className="flex items-center space-x-2">
-        <Switch id="availableForDelivery" checked={availableForDelivery} onCheckedChange={setAvailableForDelivery} />
+        <Switch 
+          id="availableForDelivery" 
+          checked={availableForDelivery} 
+          onCheckedChange={setAvailableForDelivery} 
+        />
         <Label htmlFor="availableForDelivery">Available for Delivery</Label>
       </div>
       <div>
-        <Label htmlFor="photos">Product Photos</Label>
+        <Label htmlFor="image">Product Image</Label>
         <Input
-          id="photos"
+          id="image"
           type="file"
-          onChange={handlePhotoChange}
-          multiple
+          accept="image/*"
+          onChange={handleImageChange}
           className="mt-1 block w-full text-sm text-gray-500
             file:mr-4 file:py-2 file:px-4
             file:rounded-full file:border-0
@@ -119,7 +160,11 @@ export function AddProductForm() {
             hover:file:bg-green-100"
         />
       </div>
-      <Button type="submit" disabled={loading} className="w-full bg-green-500 hover:bg-green-600 text-white">
+      <Button 
+        type="submit" 
+        disabled={loading} 
+        className="w-full bg-green-500 hover:bg-green-600 text-white"
+      >
         {loading ? (
           <span className="flex items-center justify-center">
             <Upload className="animate-spin -ml-1 mr-3 h-5 w-5" />
@@ -135,6 +180,3 @@ export function AddProductForm() {
     </form>
   )
 }
-
-
-

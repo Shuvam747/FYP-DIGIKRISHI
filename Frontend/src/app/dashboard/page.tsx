@@ -202,22 +202,23 @@ export default function Dashboard() {
               </ul>
             </CardContent>
           </Card>
-
-          <Card className="md:col-span-3">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle>Add Product</CardTitle>
-              <Button variant="outline" size="sm" onClick={() => setIsAddProductFormVisible(!isAddProductFormVisible)}>
-                {isAddProductFormVisible ? "Hide Form" : "Show Form"}
-              </Button>
-            </CardHeader>
-            <CardContent>
-              {isAddProductFormVisible && (
-                <div className="mt-4">
-                  <AddProductForm />
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {user?.role !== "GENERAL" && (
+            <Card className="md:col-span-3">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle>Add Product</CardTitle>
+                <Button variant="outline" size="sm" onClick={() => setIsAddProductFormVisible(!isAddProductFormVisible)}>
+                  {isAddProductFormVisible ? "Hide Form" : "Show Form"}
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {isAddProductFormVisible && (
+                  <div className="mt-4">
+                    <AddProductForm />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
           <Card className="md:col-span-3">
             <CardHeader>
               <CardTitle>Products</CardTitle>
