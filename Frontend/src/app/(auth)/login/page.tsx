@@ -60,7 +60,9 @@ export default function LoginPage() {
     } catch (error: any) {
       if (error instanceof AxiosError) {
         console.error(error.message)
-        setErrors([{ message: error.message }])
+        console.log(error.response?.data)
+        setErrors([{ message: error.response?.data.message }])
+        // setErrors([{ message: error.message }])
       } else {
         console.log(error)
         setErrors([{ message: "An unexpected error occurred." }])
