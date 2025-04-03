@@ -20,10 +20,13 @@ export class AuthController {
     this.sendEmail = new MailerService().sendEmail
   }
   async login(req: Request, res: Response): Promise<void> {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    email = email.toLowerCase();
     if (!email || !password) {
       throw new invalidInputError("Email and password are required");
     }
+    console.log(email, password);
+  
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       throw new invalidInputError("User not found with this email");
