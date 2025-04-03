@@ -54,20 +54,37 @@ export class AdminUserController {
     async updateVerifyRequest(req: Request, res: Response): Promise<void> {
         const requestId = req.params.id;
         const { verifyStatus } = req.body;
-        if(!Object.values(REQUEST_STATUS).includes(verifyStatus)){
+        
+        // Convert input to lowercase to match enum
+        const status = verifyStatus.toLowerCase();
+        
+        if (!Object.values(REQUEST_STATUS).includes(status as REQUEST_STATUS)) {
             throw new resourceNotFound("Invalid status");
         }
-        const request = await VerifyRequest.findByIdAndUpdate(requestId,{ verifyStatus },{ new: true });
+    
+        // Update the request status
+        const request = await VerifyRequest.findByIdAndUpdate(
+            requestId,
+            { verifyStatus: status },
+            { new: true }
+        ).populate("user");
+    
         if (!request) {
-        throw new resourceNotFound("Request not found");
+            throw new resourceNotFound("Request not found");
         }
-        const user = await User.findById(request.user);
-        if (!user) {
-        throw new resourceNotFound("User not found");
+    
+        // Update the user's role and verification status if approved
+        if (status === REQUEST_STATUS.APPROVED) {
+            const user = await User.findById(request.user._id);
+            if (!user) {
+                throw new resourceNotFound("User not found");
+            }
+            
+            user.role = request.role;
+            user.isVerified = true;
+            await user.save();
         }
-        user.role = request.role;
-        user.isVerified = request.verifyStatus === REQUEST_STATUS.APPROVED;
-        await user.save();
+    
         res.status(200).json({ message: "Request updated successfully" });
     }
 
