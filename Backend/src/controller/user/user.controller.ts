@@ -219,6 +219,10 @@ export class UserController {
   async platformVerify(req: AuthorizedRequest, res: Response): Promise<void> {
     const userId = req.user.id;
     const role = req.body.role;
+
+    console.log(userId)
+
+    console.log(req.body);
     if (!role) throw new invalidInputError("Role not found");
     if(Object.values(ROLE).indexOf(req.body.role) === -1) {
       throw new invalidInputError("Invalid role");
@@ -234,8 +238,10 @@ export class UserController {
     user.govtDocument = req.file.filename;
     const request = new VerifyRequest();
     request.user = user._id;
-    request.role = user.role;
+    request.role = role;
     request.govtDocument = req.file.filename;
+
+    console.log(request)
     await Promise.all([user.save(), request.save()]);
     res.status(200).json({ message: "Verification request sent successfully" });
   }

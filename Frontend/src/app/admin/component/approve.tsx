@@ -90,37 +90,38 @@ export function VerificationRequests() {
     }
   }
 
-  const updateRequestStatus = async (id: string, status: RequestStatus) => {
-    setIsUpdating(true)
+const updateRequestStatus = async (id: string, status: RequestStatus) => {
+    setIsUpdating(true);
     try {
-      const response = await fetch(`http://localhost:4000/api/v1/user/admin/verifyRequest/${id}`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ verifyStatus: status }),
-      })
+        const response = await fetch(`http://localhost:4000/api/v1/user/admin/verifyRequest/${id}`, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ verifyStatus: status }), // Keep lowercase
+        });
 
-      if (response.ok) {
-        // Update local state
-        const updatedRequests = requests?.map((request) =>
-          request._id === id ? { ...request, verifyStatus: status } : request,
-        )
-        setRequests(updatedRequests)
+        if (response.ok) {
+            // Update local state
+            const updatedRequests = requests?.map((request) =>
+                request._id === id ? { ...request, verifyStatus: status } : request
+            );
+            setRequests(updatedRequests);
 
-        // Close dialog and refresh
-        setOpenDialog(false)
-        setSelectedRequest(null)
-      } else {
-        console.log("Failed to update request status")
-      }
+            // Close dialog and refresh
+            setOpenDialog(false);
+            setSelectedRequest(null);
+            fetchRequests(); // Refresh the list
+        } else {
+            console.log("Failed to update request status");
+        }
     } catch (error) {
-      console.log("Error updating verification request:", error)
+        console.log("Error updating verification request:", error);
     } finally {
-      setIsUpdating(false)
+        setIsUpdating(false);
     }
-  }
+};
 
   const updateDeclineStatus = async (id: string, status: RequestStatus) => {
     setIsUpdating(true)
@@ -155,12 +156,12 @@ export function VerificationRequests() {
   }
 
   const approveRequest = (id: string) => {
-    updateRequestStatus(id, "approved")
-  }
+    updateRequestStatus(id, "approved"); // Lowercase to match enum
+}
 
-  const declineRequest = (id: string) => {
-    updateDeclineStatus(id, "rejected")
-  }
+const declineRequest = (id: string) => {
+    updateRequestStatus(id, "rejected"); // Lowercase to match enum
+}
 
   const getStatusBadge = (status: RequestStatus) => {
     switch (status) {
