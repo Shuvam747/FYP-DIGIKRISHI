@@ -135,14 +135,12 @@ export default function LoginPage() {
                 </Button>
               </form>
             )}
-               <button>
-          <Link
+<Link
   href="/admin/login"
-  className="inline-block px-6 py-2"
+  className="inline-block px-6 py-2 bg-green-600 text-white rounded hover:bg-green-800 transition-colors mt-5"
 >
   Login as admin
 </Link>
-          </button>
           </CardContent>
          
           

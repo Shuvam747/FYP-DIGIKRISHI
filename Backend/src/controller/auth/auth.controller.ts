@@ -50,7 +50,9 @@ export class AuthController {
   }
 
   static async register(req: Request, res: Response): Promise<void> {
-    const { username, email, password, confirmPassword } = req.body;
+    const { username, password, confirmPassword } = req.body;
+    let { email } = req.body;
+    email = email.toLowerCase();
     if (!username || !email) {
       throw new invalidInputError("Username and email are required");
     }
